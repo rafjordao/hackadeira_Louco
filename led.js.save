@@ -1,0 +1,24 @@
+var WebSocketServer = require('ws').Server;
+wss = new WebSocketServer({port: 8080, path: '/sonic_sensor'});
+
+wss.on('connection', function(ws) {var Gpio = require('onoff').Gpio,
+  buzzer = new Gpio(18, 'out'),
+  pir = new Gpio(17, 'in', 'both');
+ 
+pir.watch(function(err, value) {
+  if (err) exit();
+  buzzer.writeSync(value);
+  //console.log('Intruder detected'+ new Date());
+  if(value == 1){
+	console.log("tem gente"+ new Date());
+   }
+});
+ 
+console.log('Pi Bot deployed successfully!');
+console.log('Guarding the Magic pencil...');
+ 
+function exit() {
+  buzzer.unexport();
+  pir.unexport();
+  process.exit();
+}
